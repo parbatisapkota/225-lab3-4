@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: sapkotp2/225-lab3-4:latest                              #<-------change this to match your MiamiID.
+        image: cithit/sapkotp2:build-44                            #<-------change this to match your MiamiID.
         ports:
         - containerPort: 80  # Expose NGINX on port 80      
 ---
