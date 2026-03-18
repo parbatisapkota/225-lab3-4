@@ -2,10 +2,11 @@ pipeline {
     agent any 
 
     environment {
-        DOCKER_CREDENTIALS_ID = 'roseaw-dockerhub'  
+        DOCKER_CREDENTIALS_ID = 'roseaw-dockerhub'
         DOCKER_IMAGE = 'cithit/sapkotp2'
         IMAGE_TAG = "build-${BUILD_NUMBER}"
         GITHUB_URL = 'https://github.com/parbatisapkota/225-lab3-4'
+        KUBECONFIG_CREDENTIAL_ID = 'sapkotp2-225-sp26'
     }
 
     stages {
@@ -44,9 +45,9 @@ pipeline {
         stage('Deploy to Dev Environment') {
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'roseaw-225', variable: 'KUBECONFIG_FILE')]) {
+                    withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIAL_ID}", variable: 'KUBECONFIG_FILE')]) {
                         sh "kubectl --kubeconfig=$KUBECONFIG_FILE apply -f deployment-dev.yaml"
-                        sh "kubectl --kubeconfig=$KUBECONFIG_FILE get pods"
+                        sh "kubectl --kubeconfig=$KUBECONFIG_FILE get pods --namespace=default"
                     }
                 }
             }
@@ -55,9 +56,9 @@ pipeline {
         stage('Deploy to Prod Environment') {
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'roseaw-225', variable: 'KUBECONFIG_FILE')]) {
+                    withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIAL_ID}", variable: 'KUBECONFIG_FILE')]) {
                         sh "kubectl --kubeconfig=$KUBECONFIG_FILE apply -f deployment-prod.yaml"
-                        sh "kubectl --kubeconfig=$KUBECONFIG_FILE get pods"
+                        sh "kubectl --kubeconfig=$KUBECONFIG_FILE get pods --namespace=default"
                     }
                 }
             }
@@ -66,10 +67,10 @@ pipeline {
         stage('Check Kubernetes Cluster') {
             steps {
                 script {
-                    withCredentials([file(credentialsId: 'roseaw-225', variable: 'KUBECONFIG_FILE')]) {
-                        sh "kubectl --kubeconfig=$KUBECONFIG_FILE get pods"
-                        sh "kubectl --kubeconfig=$KUBECONFIG_FILE get services"
-                        sh "kubectl --kubeconfig=$KUBECONFIG_FILE get deploy"
+                    withCredentials([file(credentialsId: "${KUBECONFIG_CREDENTIAL_ID}", variable: 'KUBECONFIG_FILE')]) {
+                        sh "kubectl --kubeconfig=$KUBECONFIG_FILE get pods --namespace=default"
+                        sh "kubectl --kubeconfig=$KUBECONFIG_FILE get services --namespace=default"
+                        sh "kubectl --kubeconfig=$KUBECONFIG_FILE get deploy --namespace=default"
                     }
                 }
             }
