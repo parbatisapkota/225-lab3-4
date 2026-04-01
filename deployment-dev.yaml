@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: dev-deployment
 spec:
-  replicas: 1  # Number of NGINX pods to run
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -14,9 +14,23 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: cithit/sapkotp2:build-44  #<-------change this to match your MiamiID.
+          image: cithit/sapkotp2:build-57
           ports:
-            - containerPort: 80  # Expose NGINX on port 80      
+            - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-service
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
 
 ---
 apiVersion: networking.k8s.io/v1
@@ -34,16 +48,3 @@ spec:
                 name: dev-service
                 port:
                   number: 80
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: dev-service
-spec:
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  selector:
-    app: nginx
