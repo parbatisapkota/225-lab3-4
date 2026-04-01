@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: prod-deployment
 spec:
-  replicas: 1  # Number of NGINX pods to run
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -13,38 +13,38 @@ spec:
         app: nginx
     spec:
       containers:
-      - name: nginx
-        image: cithit/sapkotp2:build-44                            #<-------change this to match your MiamiID.
-        ports:
-        - containerPort: 80  # Expose NGINX on port 80      
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: nginx
-spec:
-  rules: 
-  - host: 
-    http:
-      paths:
-      - path: /
-        pathType: ImplementationSpecific
-        backend: 
-          service:
-            name: prod-service
-            port:
-              number: 80
+        - name: nginx
+          image: cithit/sapkotp2:build-57
+          ports:
+            - containerPort: 80
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: prod-service
 spec:
-  type: LoadBalancer 
-  loadBalancerIP: 10.48.228.119                                    # <-----change this to match your load balancer IP!!!!
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
+  type: ClusterIP
   selector:
-    app: nginx 
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: prod-service
+                port:
+                  number: 80
