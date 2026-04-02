@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: cithit/sapkotp2:build-58
+          image: sapkotp2/225-lab3-4:latest
           ports:
             - containerPort: 80
           readinessProbe:
